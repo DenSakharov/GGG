@@ -14,7 +14,7 @@ using namespace std;
 //структура хранения нажатия клавиш управления
 enum eDir
 {
-	STOP = 0, LEFT, RIGHT, UP, DOWN, LEFTS, RIGHTS, UPS, DOWNS,
+	STOP = 0, LEFT, RIGHT, UP, DOWN, LEFTS, RIGHTS, UPS, DOWNS, LEFTT, RIGHTT, UPT, DOWNT, LEFTST, RIGHTST, UPST, DOWNST
 };
 eDir dir;
 //класс карты
@@ -24,6 +24,7 @@ public:
 	Map(int height = 20, int width = 40);
 	~Map();
 	void addHero(int y, int x);
+	void addHeroTwo(int y, int x);
 	void addEnemy(int y, int x);
 
 	void Draw() {
@@ -40,6 +41,15 @@ public:
 					}
 					else (((Shoot*)cells[y][x])->lifetime)--;
 				}
+				if (strcmp(cells[y][x]->getType(), "ShootTwo") == 0) {
+					if (((ShootTwo*)cells[y][x])->lifetimeT == 0)
+					{
+						delete cells[y][x];
+						cells[y][x] = new Cell(y, x, this);
+
+					}
+					else (((ShootTwo*)cells[y][x])->lifetimeT)--;
+				}
 				cout << cells[y][x]->Image();
 			}
 			cout << endl;
@@ -49,6 +59,18 @@ public:
 		if (x2 < 0 || y2 < 0 || x2 >= width || y2 >= height) return;
 		if (strcmp(cells[y2][x2]->getType(), "Enemy") == 0) return;
 		if (strcmp(cells[y2][x2]->getType(), "Hero") == 0) return;
+		if (strcmp(cells[y2][x2]->getType(), "HeroTwo") == 0) return;
+		delete cells[y2][x2];
+		cells[y2][x2] = cells[y1][x1];
+		cells[y1][x1] = new Cell(y1, x1, this);
+		cells[y2][x2]->x = x2;
+		cells[y2][x2]->y = y2;
+	}
+	void MoveT(int x1, int y1, int x2, int y2) {
+		if (x2 < 0 || y2 < 0 || x2 >= width || y2 >= height) return;
+		if (strcmp(cells[y2][x2]->getType(), "Enemy") == 0) return;
+		if (strcmp(cells[y2][x2]->getType(), "Hero") == 0) return;
+		if (strcmp(cells[y2][x2]->getType(), "HeroTwo") == 0) return;
 		delete cells[y2][x2];
 		cells[y2][x2] = cells[y1][x1];
 		cells[y1][x1] = new Cell(y1, x1, this);
@@ -61,11 +83,17 @@ public:
 		cells[y][x] = new Shoot(y, x, this);
 
 	}
+	void makeShootT(int y, int x) {
+		delete cells[y][x];
+		cells[y][x] = new ShootTwo(y, x, this);
+
+	}
 private:
 	Cell*** cells;
 	int height;
 	int width;
 	Hero* hero = NULL;
+	HeroTwo* heroT = NULL;
 	friend class Enemy;
 };
 //начальный класс базовой ячейки
@@ -80,6 +108,9 @@ Cell::~Cell()
 Hero::~Hero()
 {
 }
+HeroTwo::~HeroTwo()
+{
+}
 //класс Врага, наследуемый от класса Ячейки
 
 
@@ -90,6 +121,9 @@ Enemy::~Enemy()
 
 
 Shoot::~Shoot()
+{
+}
+ShootTwo::~ShootTwo()
 {
 }
 
@@ -117,6 +151,11 @@ void Map::addHero(int y, int x) {
 	cells[y][x] = new Hero(y,x,this);
 	hero =(Hero*) cells[y][x];
 }
+void Map::addHeroTwo(int y, int x) {
+	delete cells[y][x];
+	cells[y][x] = new HeroTwo(y, x, this);
+	heroT = (HeroTwo*)cells[y][x];
+}
 void Map::addEnemy(int y, int x) {
 	delete cells[y][x];
 	cells[y][x] = new Enemy(y, x, this);
@@ -139,7 +178,7 @@ void Map::Run() {
 				}
 			}
 		}
-		for (Enemy* enemy:enemies)
+		for (Enemy* enemy : enemies)
 		{
 			enemy->Move();
 		}
@@ -147,6 +186,7 @@ void Map::Run() {
 		if (_kbhit()) {
 			switch (_getch())
 			{
+				//хотьба первым игроком
 			case 'w':
 				dir = UP;
 				break;
@@ -159,6 +199,20 @@ void Map::Run() {
 			case 'd':
 				dir = RIGHT;
 				break;
+				//хотьба правым игроком
+			case 'i':
+				dir = UPT;
+				break;
+			case 'k':
+				dir = DOWNT;
+				break;
+			case 'j':
+				dir = LEFTT;
+				break;
+			case 'l':
+				dir = RIGHTT;
+				break;
+				//стрельба первого игрока
 			case 'D':
 				dir = RIGHTS;
 				break;
@@ -171,7 +225,19 @@ void Map::Run() {
 			case 'A':
 				dir = LEFTS;
 				break;
-				//стрельба, нажатие клавишы f
+
+			case 'L':
+				dir = RIGHTST;
+				break;
+			case 'I':
+				dir = UPST;
+				break;
+			case 'K':
+				dir = DOWNST;
+				break;
+			case 'J':
+				dir = LEFTST;
+				break;
 
 			}
 		}
@@ -190,6 +256,18 @@ void Map::Run() {
 		case DOWN:
 			Move(hero->x, hero->y, hero->x, hero->y + 1);
 			break;
+		case LEFTT:
+			MoveT(heroT->x, heroT->y, heroT->x - 1, heroT->y);
+			break;
+		case RIGHTT:
+			MoveT(heroT->x, heroT->y, heroT->x + 1, heroT->y);
+			break;
+		case UPT:
+			MoveT(heroT->x, heroT->y, heroT->x, heroT->y - 1);
+			break;
+		case DOWNT:
+			MoveT(heroT->x, heroT->y, heroT->x, heroT->y + 1);
+			break;
 		case LEFTS:
 			for (int x = hero->x - 1; x >= 0; x--)
 			{
@@ -201,7 +279,7 @@ void Map::Run() {
 			}
 			break;
 		case RIGHTS:
-			for (int x = hero->x + 1; x < width ; x++)
+			for (int x = hero->x + 1; x < width; x++)
 			{
 				if (strcmp(cells[hero->y][x]->getType(), "Cell") != 0) {
 					makeShoot(hero->y, x);
@@ -221,7 +299,7 @@ void Map::Run() {
 			}
 			break;
 		case DOWNS:
-			for (int y = hero->y + 1; y <height; y++)
+			for (int y = hero->y + 1; y < height; y++)
 			{
 				if (strcmp(cells[y][hero->x]->getType(), "Cell") != 0) {
 					makeShoot(y, hero->x);
@@ -230,11 +308,52 @@ void Map::Run() {
 				makeShoot(y, hero->x);
 			}
 			break;
+		case LEFTST:
+			for (int x = heroT->x - 1; x >= 0; x--)
+			{
+				if (strcmp(cells[heroT->y][x]->getType(), "Cell") != 0) {
+					makeShootT(heroT->y, x);
+					break;
+				}
+				makeShootT(heroT->y, x);
+			}
+			break;
+		case RIGHTST:
+			for (int x = heroT->x + 1; x < width; x++)
+			{
+				if (strcmp(cells[heroT->y][x]->getType(), "Cell") != 0) {
+					makeShootT(heroT->y, x);
+					break;
+				}
+				makeShootT(heroT->y, x);
+			}
+			break;
+		case UPST:
+			for (int y = heroT->y - 1; y >= 0; y--)
+			{
+				if (strcmp(cells[y][heroT->x]->getType(), "Cell") != 0) {
+					makeShootT(y, heroT->x);
+					break;
+				}
+				makeShootT(y, heroT->x);
+			}
+			break;
+		case DOWNST:
+			for (int y = heroT->y + 1; y < height; y++)
+			{
+				if (strcmp(cells[y][heroT->x]->getType(), "Cell") != 0) {
+					makeShootT(y, heroT->x);
+					break;
+				}
+				makeShootT(y, heroT->x);
+			}
+			break;
 		}
-			dir = STOP;
-			Draw();
-		}
+		dir = STOP;
+		Draw();
 	}
+}
+	
 	void Enemy::Move() {
 		int sr = rand() % 20;
 		if (sr < 4) direct = sr;
@@ -258,6 +377,7 @@ void Map::Run() {
 		srand(unsigned int(time(NULL)));
 		Map game(20, 40);
 		game.addHero(10, 20);
+		game.addHeroTwo(2, 20);
 		game.addEnemy(15, 30);
 		game.addEnemy(5, 17);
 		game.addEnemy(15, 17);

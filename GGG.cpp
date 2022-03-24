@@ -462,6 +462,19 @@ void Map::Run() {
 		char msg[256];
 		while (true) {
 			recv(Connection, msg, sizeof(msg), NULL);
+			
+			if (msg[0]=='1')
+			{
+				//Sleep(100);
+				recv(Connection, msg, sizeof(msg), NULL);
+				int x = atoi(msg);
+				//Sleep(100);
+				recv(Connection, msg, sizeof(msg), NULL);
+				int y = atoi(msg);
+				game.addEnemy(y,x);
+				continue;
+			}
+
 			switch (msg[0])
 			{
 				//хотьба врага
@@ -524,13 +537,13 @@ void Map::Run() {
 		int x1 = atoi(msg1);
 		recv(Connection, msg1, sizeof(msg1), NULL);
 		int y1 = atoi(msg1);
-		recv(Connection, msg1, sizeof(msg1), NULL);
-		int x2 = atoi(msg1);
-		recv(Connection, msg1, sizeof(msg1), NULL);
-		int y2 = atoi(msg1);
+		//recv(Connection, msg1, sizeof(msg1), NULL);
+		//int x2 = atoi(msg1);
+		//recv(Connection, msg1, sizeof(msg1), NULL);
+		//int y2 = atoi(msg1);
 		Sleep(100);
 		game.addHero(y1, x1);
-		game.addEnemy(y2, x2);
+		/*game.addEnemy(y2, x2);*/
 
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(0), NULL, NULL);
 

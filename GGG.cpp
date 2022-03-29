@@ -37,10 +37,16 @@ public:
 	void addEnemy(int y, int x);
 
 	void Draw() {
+		for (int x = 0; x < width+1; x++)
+		{
+			cout<<"#";
+		}
 		for (int y = 0; y < height; y++)
 		{
+			cout << "#";
 			for (int x = 0; x < width; x++)
 			{
+				
 				if (strcmp(cells[y][x]->getType(), "Shoot") == 0) {
 					if (((Shoot*)cells[y][x])->lifetime == 0)
 					{
@@ -61,7 +67,12 @@ public:
 				}*/
 				cout << cells[y][x]->Image();
 			}
+			cout << "#";
 			cout << endl;
+		}
+		for (int x = 0; x < width + 2; x++)
+		{
+			cout << "#";
 		}
 	}
 	void Move(int x1, int y1, int x2, int y2) {

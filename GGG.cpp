@@ -37,10 +37,11 @@ public:
 	void addEnemy(int y, int x);
 
 	void Draw() {
-		for (int x = 0; x < width+1; x++)
+		for (int x = 0; x < width+2; x++)
 		{
 			cout<<"#";
 		}
+		cout << endl;
 		for (int y = 0; y < height; y++)
 		{
 			cout << "#";

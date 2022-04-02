@@ -41,6 +41,22 @@ public:
 	virtual const char* getType() { return "Hero"; }
 private:
 };
+//class HeroTwo :public Cell
+//{
+//public:
+//
+//	HeroTwo(int y, int x, Map* map) : Cell(y, x, map) {
+//	}
+//	~HeroTwo();
+//	virtual char Image() {
+//		return 'o';
+//	}
+//	void MoveT(int y, int x) {
+//
+//	}
+//	virtual const char* getType() { return "HeroTwo"; }
+//private:
+//};
 class Enemy :public Cell
 {
 public:
@@ -71,4 +87,19 @@ private:
 	int lifetime = 1;
 	friend class Map;
 };
+//class ShootTwo : public Cell
+//{
+//public:
+//	ShootTwo(int y, int x, Map* map) : Cell(y, x, map) {
+//	}
+//	~ShootTwo();
+//	virtual char Image() {
+//		return '.';
+//	}
+//	virtual const char* getType() { return "ShootTwo"; }
+//
+//private:
+//	int lifetimeT = 1;
+//	friend class Map;
+//};
 #endif
